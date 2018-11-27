@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="2PM-7y-r4d">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="hgj-lg-n8I">
     <device id="retina5_9" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
@@ -32,6 +32,9 @@
                                         <rect key="frame" x="0.0" y="217.33333333333331" width="335" height="42"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="25"/>
                                         <state key="normal" title="Continue"/>
+                                        <connections>
+                                            <action selector="requestPermissions:" destination="BYZ-38-t0r" eventType="touchUpInside" id="wTG-ea-UzY"/>
+                                        </connections>
                                     </button>
                                 </subviews>
                             </stackView>
@@ -45,15 +48,18 @@
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
                     <navigationItem key="navigationItem" title="Welcome" id="31C-8d-HPT"/>
+                    <connections>
+                        <outlet property="helpLabel" destination="5xS-4v-0zJ" id="1F8-0G-2Bh"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1284" y="-565.27093596059115"/>
+            <point key="canvasLocation" x="3001" y="-618"/>
         </scene>
         <!--Happy Days-->
         <scene sceneID="G4X-8s-JGB">
             <objects>
-                <collectionViewController id="fg5-Da-oxg" sceneMemberID="viewController">
+                <collectionViewController id="fg5-Da-oxg" customClass="MemoriesViewController" customModule="HappyDays" customModuleProvider="target" sceneMemberID="viewController">
                     <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" id="ESl-6t-Ihm">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -65,7 +71,7 @@
                             <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                         </collectionViewFlowLayout>
                         <cells>
-                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="Dw2-LL-NVo">
+                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="Memory" id="Dw2-LL-NVo" customClass="MemoryCell" customModule="HappyDays" customModuleProvider="target">
                                 <rect key="frame" x="87.666666666666671" y="50" width="200" height="200"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO">
@@ -83,9 +89,12 @@
                                     <constraint firstAttribute="bottom" secondItem="zeG-ny-Z9N" secondAttribute="bottom" id="htN-kk-b0g"/>
                                     <constraint firstItem="zeG-ny-Z9N" firstAttribute="leading" secondItem="Dw2-LL-NVo" secondAttribute="leading" id="u71-uC-lal"/>
                                 </constraints>
+                                <connections>
+                                    <outlet property="imageView" destination="zeG-ny-Z9N" id="MYt-WC-19R"/>
+                                </connections>
                             </collectionViewCell>
                         </cells>
-                        <collectionReusableView key="sectionHeaderView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="ezB-cv-mKe">
+                        <collectionReusableView key="sectionHeaderView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" reuseIdentifier="Header" id="ezB-cv-mKe">
                             <rect key="frame" x="0.0" y="0.0" width="375" height="50"/>
                             <autoresizingMask key="autoresizingMask"/>
                             <subviews>
@@ -98,6 +107,9 @@
                                             <color key="value" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         </userDefinedRuntimeAttribute>
                                     </userDefinedRuntimeAttributes>
+                                    <connections>
+                                        <outlet property="delegate" destination="fg5-Da-oxg" id="AwH-Ng-f02"/>
+                                    </connections>
                                 </searchBar>
                             </subviews>
                             <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -111,12 +123,12 @@
                 </collectionViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="pBi-sa-VDO" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3082.4000000000001" y="-564.53201970443354"/>
+            <point key="canvasLocation" x="1172" y="-618"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="mxL-oj-yuX">
             <objects>
-                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="2PM-7y-r4d" sceneMemberID="viewController">
+                <navigationController storyboardIdentifier="FirstRun" automaticallyAdjustsScrollViewInsets="NO" id="2PM-7y-r4d" sceneMemberID="viewController">
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="303-eY-vTo">
                         <rect key="frame" x="0.0" y="44" width="375" height="44"/>
@@ -129,7 +141,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="IcN-9i-Bs3" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="352.80000000000001" y="-564.46776611694156"/>
+            <point key="canvasLocation" x="2070" y="-618"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="4KH-MR-2PQ">
@@ -147,7 +159,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="BOP-x1-pT5" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2140" y="-565.27093596059115"/>
+            <point key="canvasLocation" x="230" y="-618"/>
         </scene>
     </scenes>
 </document>
