@@ -26,7 +26,7 @@ class ViewController: UIViewController {
     }
     
 
-    //MARK: - Request Permissions
+    //MARK: - Permissions
     
     func requestPhotosPermissions() {
         PHPhotoLibrary.requestAuthorization { [unowned self] authStatus in
