@@ -11,9 +11,11 @@ import AVFoundation
 import Speech
 import Photos
 
-class MemoriesViewController: UICollectionViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UICollectionViewDelegateFlowLayout {
+class MemoriesViewController: UICollectionViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UICollectionViewDelegateFlowLayout, AVAudioRecorderDelegate {
     
     var memories = [URL]()
+    var activeMemory, recordingURL: URL!
+    var audioRecorder: AVAudioRecorder?
     
 
     override func viewDidLoad() {
@@ -23,6 +25,8 @@ class MemoriesViewController: UICollectionViewController, UIImagePickerControlle
         loadMemories()
         
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addTapped))
+        
+        recordingURL = getDocumentsDirectory().appendingPathComponent("recording.m4a")
         
     }
     
@@ -164,6 +168,69 @@ class MemoriesViewController: UICollectionViewController, UIImagePickerControlle
         navigationController?.present(vc, animated: true, completion: nil)
     }
     
+    // MARK: - Gesture and Recording
+    
+    
+    @objc func memoryLongPress(sender: UILongPressGestureRecognizer) {
+        // called when a long press has started or ended
+        
+        // convert the gesture recognizer’s view property to a MemoryCell,
+        // then we can pass that to the indexPath() method of our collection view.
+        if sender.state == .began {
+            let cell = sender.view as! MemoryCell
+            
+            if let index = collectionView?.indexPath(for: cell) {
+                activeMemory = memories[index.row]
+                recordMemory()
+            }
+        } else if sender.state == .ended {
+            finishRecording(success: true)
+        }
+    }
+    
+    func recordMemory() {
+        // perform mic recording
+        
+        // Set the background color to red so the user knows their microphone is recording.
+        collectionView?.backgroundColor = UIColor(red: 0.5, green: 0, blue: 0, alpha: 1)
+        
+        // this just saves me writing AVAudioSession.sharedInstance() everywhere
+        let recordingSession = AVAudioSession.sharedInstance()
+        
+        do {
+            // configure the session for recording and playback through the speaker
+            try recordingSession.setCategory(.playAndRecord, mode: .default, options: .defaultToSpeaker)
+            try recordingSession.setActive(true, options: .init())
+            
+            // set up a high-quality recording session
+            let settings = [
+                AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
+                AVSampleRateKey: 44100,
+                AVNumberOfChannelsKey: 2,
+                AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue
+            ]
+            
+            // create the audio recording and assign ourselves as the delegate
+            audioRecorder = try AVAudioRecorder(url: recordingURL, settings: settings)
+            audioRecorder?.delegate = self
+            audioRecorder?.record()
+        } catch let error {
+            // failed to record
+            print("Failed to record: \(error).")
+            finishRecording(success: false)
+        }
+    }
+    
+    func finishRecording(success: Bool) {
+        // mic recording has finished
+        
+    }
+    
+    func transcribeAudio(memory: URL) {
+        // handles transcribing the narration into text and linking that to the memory
+    }
+    
+    
     // MARK: - UIImagePicker Functions
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
@@ -198,6 +265,17 @@ class MemoriesViewController: UICollectionViewController, UIImagePickerControlle
         let image = UIImage(contentsOfFile: imageName)
         cell.imageView.image = image
         
+        // check for the gesture recognizer and add border to the cell
+        if cell.gestureRecognizers == nil {
+            let recognizer = UILongPressGestureRecognizer(target: self, action: #selector(memoryLongPress))
+            recognizer.minimumPressDuration = 0.25
+            cell.addGestureRecognizer(recognizer)
+        }
+        
+        cell.layer.borderColor = UIColor.white.cgColor
+        cell.layer.borderWidth = 3
+        cell.layer.cornerRadius = 10
+        
         return cell
     }
     
@@ -211,6 +289,15 @@ class MemoriesViewController: UICollectionViewController, UIImagePickerControlle
             return CGSize.zero
         } else {
             return CGSize(width: 0, height: 50)
+        }
+    }
+    
+    // MARK: - Audio Recorder Delegate
+    
+    func audioRecorderDidFinishRecording(_ recorder: AVAudioRecorder, successfully flag: Bool) {
+        // catch when the recording got terminated by the system, e.g. if a phone call came in
+        if !flag {
+            finishRecording(success: false)
         }
     }
 }
