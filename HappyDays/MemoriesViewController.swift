@@ -223,8 +223,32 @@ class MemoriesViewController: UICollectionViewController, UIImagePickerControlle
     
     func finishRecording(success: Bool) {
         // mic recording has finished
+        collectionView?.backgroundColor = UIColor.darkGray
         
+        audioRecorder?.stop()
+        
+        if success {
+            do {
+                //create a file URL out of the active memory URL plus “m4a”
+                let memoryAudioURL = activeMemory.appendingPathExtension("m4a")
+                let fm = FileManager.default
+                
+                //If a recording already exists there, we need to delete it because you can’t move a file over one that already exists
+                if fm.fileExists(atPath: memoryAudioURL.path) {
+                    try fm.removeItem(at: memoryAudioURL)
+                }
+                
+                //Move our recorded file (stored at the URL we put in recordingURL) into the memory’s audio URL
+                try fm.moveItem(at: recordingURL, to: memoryAudioURL)
+                
+                //Start the transcription process
+                transcribeAudio(memory: activeMemory)
+            } catch let error {
+                print("Failure finishing recording: \(error)")
+            }
+        }
     }
+    
     
     func transcribeAudio(memory: URL) {
         // handles transcribing the narration into text and linking that to the memory
