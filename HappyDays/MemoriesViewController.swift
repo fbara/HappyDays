@@ -16,6 +16,7 @@ class MemoriesViewController: UICollectionViewController, UIImagePickerControlle
     var memories = [URL]()
     var activeMemory, recordingURL: URL!
     var audioRecorder: AVAudioRecorder?
+    var audioPlayer: AVAudioPlayer?
     
 
     override func viewDidLoad() {
@@ -188,8 +189,10 @@ class MemoriesViewController: UICollectionViewController, UIImagePickerControlle
         }
     }
     
+    /// Perform microphone recording
     func recordMemory() {
-        // perform mic recording
+        // If recording is going on now, stop it.
+        audioPlayer?.stop()
         
         // Set the background color to red so the user knows their microphone is recording.
         collectionView?.backgroundColor = UIColor(red: 0.5, green: 0, blue: 0, alpha: 1)
@@ -331,6 +334,31 @@ class MemoriesViewController: UICollectionViewController, UIImagePickerControlle
         cell.layer.cornerRadius = 10
         
         return cell
+    }
+    
+    override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        // trigger audio playback for a cell.
+        let memory = memories[indexPath.row]
+        let fm = FileManager.default
+        
+        do {
+            let audioName = audioURL(for: memory)
+            let transcriptionName = transcriptionURL(for: memory)
+            
+            if fm.fileExists(atPath: audioName.path) {
+                // if audio file exists, play it
+                audioPlayer = try AVAudioPlayer(contentsOf: audioName)
+                audioPlayer?.play()
+            }
+            
+            if fm.fileExists(atPath: transcriptionName.path) {
+                // if transcription exists, print it
+                let contents = try String(contentsOf: transcriptionName)
+                print("Transcription: \(contents)")
+            }
+        } catch {
+            print("Error loading audio.")
+        }
     }
     
     override func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
